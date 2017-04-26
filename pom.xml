@@ -61,6 +61,7 @@
             </resource>
         </resources>
         <plugins>
+<!--
             <plugin>
                 <groupId>com.zenjava</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
@@ -69,9 +70,34 @@
                     <mainClass>am.davsoft.propman.Main</mainClass>
                     <appName>${project.name}</appName>
                     <vendor>DavSoft [David.Shahbazyan]</vendor>
-                    <!--<preLoader>am.davsoft.propman.MainPreloader</preLoader>-->
                 </configuration>
             </plugin>
+-->
+            <!-- UNCOMMENT FOR NATIVE PACKAGING -->
+            <!--
+            -->
+            <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>8.6.0</version>
+                <configuration>
+                    <mainClass>am.davsoft.propman.Main</mainClass>
+                    <appName>${project.name}</appName>
+                    <vendor>DavSoft [David.Shahbazyan]</vendor>
+                    <verbose>true</verbose>
+                    <allPermissions>true</allPermissions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>create-jfxjar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>native</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -85,7 +111,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.2</version>
-                <!-- nothing here -->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -100,9 +125,6 @@
                         <manifest>
                             <mainClass>am.davsoft.propman.Main</mainClass>
                         </manifest>
-                        <manifestEntries>
-                            <!--<JavaFX-Preloader-Class>am.davsoft.propman.MainPreloader</JavaFX-Preloader-Class>-->
-                        </manifestEntries>
                     </archive>
                 </configuration>
                 <executions>
