@@ -1,9 +1,12 @@
 package am.davsoft.propman.helpers;
 
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +17,7 @@ import static org.testng.Assert.*;
  * @since Apr 19, 2017
  */
 public class ExcelProcessorTest {
+    File out;
 
     @Test
     public void testWritePropertiesIntoExcel() throws Exception {
@@ -26,8 +30,23 @@ public class ExcelProcessorTest {
         props.put("key6", "val6");
         props.put("key7", "val7");
 
-        File out = new File("/FileArchive/projects/Java/propman/out.xls");
+        out = new File("out.xls");
         ExcelProcessor.writePropertiesIntoExcel(props, out);
+
+        Map<String, String> loadedProps = ExcelProcessor.loadPropertiesFromExcel(out);
+
+        assertEquals(props.size(), loadedProps.size());
+
+        for (Map.Entry<String, String> entry : loadedProps.entrySet()) {
+            assertTrue(props.entrySet().contains(entry), String.format("No entry with key:%s and val:%s was found.", entry.getKey(), entry.getValue()));
+        }
+    }
+
+    @AfterClass
+    public void cleanupTempData() throws IOException {
+        if (out != null) {
+            Files.deleteIfExists(out.toPath());
+        }
     }
 
 }
