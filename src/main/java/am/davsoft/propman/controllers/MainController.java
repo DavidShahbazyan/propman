@@ -11,6 +11,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.configuration.ConfigurationException;
@@ -24,9 +25,11 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ResourceBundle;
 
@@ -36,8 +39,9 @@ import java.util.ResourceBundle;
  */
 public class MainController implements Initializable {
     @FXML private TextField txtExcelPath, txtPropertiesPath;
-    @FXML private Label lblStatus;
+    @FXML private Label lblStatus, lblProgressPercents;
     @FXML private ProgressBar pbProgress;
+    @FXML private HBox hbProgressPercentsBlock;
     @FXML private Hyperlink hlClearExcelSelection, hlClearPropertiesSelection;
 
     private Stage currentStage;
@@ -59,6 +63,10 @@ public class MainController implements Initializable {
         hlClearExcelSelection.managedProperty().bind(excelFile.isNotNull());
         hlClearPropertiesSelection.visibleProperty().bind(propertiesFile.isNotNull());
         hlClearPropertiesSelection.managedProperty().bind(propertiesFile.isNotNull());
+        hbProgressPercentsBlock.visibleProperty().bind(pbProgress.visibleProperty());
+        hbProgressPercentsBlock.managedProperty().bind(pbProgress.managedProperty());
+        pbProgress.progressProperty().addListener((observable, oldValue, newValue) -> lblProgressPercents.setText(String.valueOf(Math.round(100 * newValue.doubleValue()))));
+//        lblProgressPercents.textProperty().bind(pbProgress.progressProperty().asString());
 
         hideProgressBar();
     }
@@ -140,9 +148,9 @@ public class MainController implements Initializable {
                     PropertiesConfiguration config = new PropertiesConfiguration();
                     config.setDelimiterParsingDisabled(true);
                     PropertiesConfigurationLayout layout = new PropertiesConfigurationLayout(config);
-                    layout.load(new InputStreamReader(new FileInputStream(properties), "ISO-8859-1"));
+                    layout.load(new InputStreamReader(new FileInputStream(properties), Charset.forName("UTF-8")));
 
-                    Workbook book = new HSSFWorkbook();
+                    Workbook book = new SXSSFWorkbook();
                     Sheet sheet = book.createSheet("Sheet1");
 
                     int rowIndex = sheet.getLastRowNum();
@@ -216,7 +224,7 @@ public class MainController implements Initializable {
                     if (!properties.exists()) {
                         Files.createFile(properties.toPath());
                     }
-                    layout.load(new InputStreamReader(new FileInputStream(properties)));
+                    layout.load(new InputStreamReader(new FileInputStream(properties), Charset.forName("UTF-8")));
 
                     POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(excel));
                     HSSFWorkbook wb = new HSSFWorkbook(fs);
@@ -236,7 +244,7 @@ public class MainController implements Initializable {
                         updateProgress(++done, rows);
                     }
 
-                    layout.save(new OutputStreamWriter(new FileOutputStream(properties)));
+                    layout.save(new OutputStreamWriter(new FileOutputStream(properties), Charset.forName("UTF-8")));
                 } catch (ConfigurationException | IOException e) {
                     Logger.getLogger(getClass()).error("Error occurred in excelToProperties method: ", e);
                 }
