@@ -30,7 +30,10 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Map;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 /**
@@ -47,7 +50,7 @@ public class MainController implements Initializable {
     private Stage currentStage;
 
     private final ObjectProperty<TaskStatus> taskStatus = new SimpleObjectProperty<>();
-    private final FileChooser.ExtensionFilter excelExtensions = new FileChooser.ExtensionFilter("Microsoft Excel Sheet", "*.xls", "*.xlsx");
+    private final FileChooser.ExtensionFilter excelExtensions = new FileChooser.ExtensionFilter("Microsoft Excel Sheet", "*.xlsx", "*.xls");
     private final FileChooser.ExtensionFilter propsExtensions = new FileChooser.ExtensionFilter(".properties", "*.properties");
     private final ObjectProperty<File> excelFile = new SimpleObjectProperty<>();
     private final ObjectProperty<File> propertiesFile = new SimpleObjectProperty<>();
@@ -148,7 +151,7 @@ public class MainController implements Initializable {
                     PropertiesConfiguration config = new PropertiesConfiguration();
                     config.setDelimiterParsingDisabled(true);
                     PropertiesConfigurationLayout layout = new PropertiesConfigurationLayout(config);
-                    layout.load(new InputStreamReader(new FileInputStream(properties), Charset.forName("UTF-8")));
+                    layout.load(new InputStreamReader(new FileInputStream(properties), StandardCharsets.UTF_8));
 
                     Workbook book = new SXSSFWorkbook();
                     Sheet sheet = book.createSheet("Sheet1");
@@ -174,7 +177,8 @@ public class MainController implements Initializable {
 
                     book.write(new FileOutputStream(excel));
                     book.close();
-                } catch (ConfigurationException | IOException e) {
+                } catch (Exception e) {
+//                } catch (ConfigurationException | IOException e) {
                     Logger.getLogger(getClass()).error("Error occurred in propertiesToExcel method: ", e);
                 }
                 return null;
@@ -224,7 +228,7 @@ public class MainController implements Initializable {
                     if (!properties.exists()) {
                         Files.createFile(properties.toPath());
                     }
-                    layout.load(new InputStreamReader(new FileInputStream(properties), Charset.forName("UTF-8")));
+                    layout.load(new InputStreamReader(new FileInputStream(properties), StandardCharsets.UTF_8));
 
                     POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(excel));
                     HSSFWorkbook wb = new HSSFWorkbook(fs);
@@ -244,7 +248,7 @@ public class MainController implements Initializable {
                         updateProgress(++done, rows);
                     }
 
-                    layout.save(new OutputStreamWriter(new FileOutputStream(properties), Charset.forName("UTF-8")));
+                    layout.save(new OutputStreamWriter(new FileOutputStream(properties), StandardCharsets.UTF_8));
                 } catch (ConfigurationException | IOException e) {
                     Logger.getLogger(getClass()).error("Error occurred in excelToProperties method: ", e);
                 }
