@@ -18,7 +18,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.PropertiesConfigurationLayout;
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
@@ -29,11 +28,8 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import java.io.*;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Map;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
 /**
@@ -50,7 +46,7 @@ public class MainController implements Initializable {
     private Stage currentStage;
 
     private final ObjectProperty<TaskStatus> taskStatus = new SimpleObjectProperty<>();
-    private final FileChooser.ExtensionFilter excelExtensions = new FileChooser.ExtensionFilter("Microsoft Excel Sheet", "*.xlsx", "*.xls");
+    private final FileChooser.ExtensionFilter excelExtensions = new FileChooser.ExtensionFilter("Microsoft Excel Sheet", "*.xls");
     private final FileChooser.ExtensionFilter propsExtensions = new FileChooser.ExtensionFilter(".properties", "*.properties");
     private final ObjectProperty<File> excelFile = new SimpleObjectProperty<>();
     private final ObjectProperty<File> propertiesFile = new SimpleObjectProperty<>();
@@ -231,8 +227,8 @@ public class MainController implements Initializable {
                     layout.load(new InputStreamReader(new FileInputStream(properties), StandardCharsets.UTF_8));
 
                     POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(excel));
-                    HSSFWorkbook wb = new HSSFWorkbook(fs);
-                    HSSFSheet sheet = wb.getSheetAt(0);
+                    Workbook wb = new HSSFWorkbook(fs);
+                    Sheet sheet = wb.getSheetAt(0);
 
                     int rows = sheet.getLastRowNum();
                     int done = 0;
