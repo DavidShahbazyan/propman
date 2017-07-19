@@ -149,7 +149,7 @@ public class MainController implements Initializable {
                     PropertiesConfigurationLayout layout = new PropertiesConfigurationLayout(config);
                     layout.load(new InputStreamReader(new FileInputStream(properties), StandardCharsets.UTF_8));
 
-                    Workbook book = new SXSSFWorkbook();
+                    Workbook book = new HSSFWorkbook();
                     Sheet sheet = book.createSheet("Sheet1");
 
                     int rowIndex = sheet.getLastRowNum();
